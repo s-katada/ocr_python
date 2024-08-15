@@ -19,10 +19,14 @@ def read_csv():
     return list(itertools.chain.from_iterable(codes))
 
 def snapshots(code):
-  options = Options()
-  options.headless = False
-  driver = webdriver.Chrome(options=options)
-  login(driver, code)
+  try:
+    options = Options()
+    options.headless = False
+    driver = webdriver.Chrome(options=options)
+    login(driver, code)
+    personnal_evaluation(driver)
+  finally:
+    driver.quit()
 
 def login(driver, code):
   url = 'http://localhost:3000/users/sign_in'
@@ -33,6 +37,12 @@ def login(driver, code):
   input_password_form.send_keys('123456')
   login_button = driver.find_element(By.NAME, 'button')
   login_button.click()
+
+def personnal_evaluation(driver):
+  url = 'http://localhost:3000/personnel_evaluations?year=2024&eval_period_code=210&classification=3'
+  driver.get(url)
+  eval_button = driver.find_element(By.XPATH, "//button[contains(text(), '評価(表示)')]")
+  eval_button.click()
 
 def main():
   codes = read_csv()
